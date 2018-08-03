@@ -1,18 +1,10 @@
 ﻿using System;
 using IllusionPlugin;
-//using Steamworks;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
 using UnityEngine;
-using UnofficialLeaderBoardPlugin;
-using UnityEngine.SceneManagement;
 using System.Reflection;
 using System.IO;
+using UnofficialLeaderBoardPlugin;
 
-namespace UnofficialLeaderBoardPlugin
-{
     public class Plugin : IPlugin
     {
         public string Name
@@ -22,11 +14,12 @@ namespace UnofficialLeaderBoardPlugin
 
         public string Version
         {
-            get { return "0.0.8"; }
+            get { return "1.0.3"; }
         }
 
         public void OnApplicationStart()
         {
+
             PlayerPrefs.SetInt("lbPatched", 1);
         }
 
@@ -46,14 +39,15 @@ namespace UnofficialLeaderBoardPlugin
             if (level != 1) return;
             if (!loaded)
             {
-                var leaderBoardsModel = PersistentSingleton<LeaderboardsModel>.instance;
-                ReflectionUtil.SetPrivateField(leaderBoardsModel, "_platformLeaderboardsHandler", new CustomSteamPlatformLeaderboardsHandler());
+                Log("Plugin started");
+                var leaderBoardsModel = PersistentSingleton<PlatformLeaderboardsModel>.instance;
+                Log("Leaderboards model found");
+                ReflectionUtil.SetPrivateField(leaderBoardsModel, "_platformLeaderboardsHandler", new CustomPlatformLeaderboardsHandler());
+                Log("Set new leaderboardsHandler");
                 loaded = true;
             }
-
         }
-   
-        
+
         public void OnUpdate()
         {
         }
@@ -62,5 +56,14 @@ namespace UnofficialLeaderBoardPlugin
         {
 
         }
+        public string GetDirectoryPath(Assembly assembly)
+        {
+            string filePath = new Uri(assembly.CodeBase).LocalPath;
+            return Path.GetDirectoryName(filePath);
+        }
+        private void Log(string data)
+        {
+
+            File.AppendAllText(@"LeaderBoardPluginLog.txt", data + Environment.NewLine);
+        }
     }
-}

@@ -1,15 +1,8 @@
 ﻿using System;
 using IllusionPlugin;
-//using Steamworks;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
 using UnityEngine;
-using UnofficialLeaderBoardPlugin;
-using UnityEngine.SceneManagement;
-using System.Reflection;
-using System.IO;
+using Oculus.Platform;
+using Oculus.Platform.Models;
 
 namespace UnofficialLeaderBoardPlugin
 {
@@ -22,7 +15,7 @@ namespace UnofficialLeaderBoardPlugin
 
         public string Version
         {
-            get { return "0.0.8"; }
+            get { return "1.0.3"; }
         }
 
         public void OnApplicationStart()
@@ -37,6 +30,10 @@ namespace UnofficialLeaderBoardPlugin
 
         public void OnLevelWasLoaded(int level)
         {
+            if (level == 1)
+            {
+                Initialize();
+            }
         }
 
         public bool loaded = false;
@@ -46,15 +43,21 @@ namespace UnofficialLeaderBoardPlugin
             if (level != 1) return;
             if (!loaded)
             {
-                var leaderBoardsModel = PersistentSingleton<LeaderboardsModel>.instance;
+                var leaderBoardsModel = PersistentSingleton<PlatformLeaderboardsModel>.instance;
                 ReflectionUtil.SetPrivateField(leaderBoardsModel, "_platformLeaderboardsHandler", new CustomPlatformLeaderboardsHandle());
-                new CustomOculusPlatform().GetPlayerId(new HMAsyncRequest(), null);
                 loaded = true;
             }
 
         }
-   
         
+        public void Initialize()
+        {
+            Request<User> oculusRequest = Users.GetLoggedInUser().OnComplete(delegate(Message<User> message)
+            {
+                Global.playerId = message.Data.ID;
+                Global.playerName = message.Data.OculusID;
+            });
+        }
         public void OnUpdate()
         {
         }

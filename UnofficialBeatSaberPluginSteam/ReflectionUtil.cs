@@ -1,7 +1,6 @@
 ﻿using System.Reflection;
 
-namespace UnofficialLeaderBoardPlugin
-{
+
     //Credit: xyonico
 	public static class ReflectionUtil
 	{
@@ -36,4 +35,3 @@ namespace UnofficialLeaderBoardPlugin
 			dynMethod.Invoke(obj, methodParams);
 		}
 	}
-}
